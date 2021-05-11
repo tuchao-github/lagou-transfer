@@ -55,15 +55,16 @@ public class BeanFactory {
                 Field[] fields = clazz.getDeclaredFields();
                 //遍历属性，确认是否有使用Autowired注解，有使用注解则需要完成注入
                 for (Field field : fields) {
-                    //判断是否使用注解的参数
+                    //判断是否使用注解的参数，有使用注解则注入
                     if (field.isAnnotationPresent(MyAutowired.class)
-                            && field.getAnnotation(MyAutowired.class).value()) {//有使用注解则注入
+                            && field.getAnnotation(MyAutowired.class).value()) {
                         String[] names = field.getType().getName().split("\\.");
                         String name = names[names.length - 1];
                         Method[] methods = clazz.getMethods();
                         for (int j = 0; j < methods.length; j++) {
                             Method method = methods[j];
-                            if (method.getName().equalsIgnoreCase("set" + name)) {  // 该方法就是 setAccountDao(AccountDao accountDao)
+                            // 该方法就是 setAccountDao(AccountDao accountDao)
+                            if (method.getName().equalsIgnoreCase("set" + name)) {
                                 method.invoke(obj, map.get(name));
                             }
                         }
@@ -73,7 +74,8 @@ public class BeanFactory {
                 if(clazz.isAnnotationPresent(MyTransactional.class)){
                     //获取代理工厂
                     ProxyFactory proxyFactory = (ProxyFactory) BeanFactory.getBean("proxyFactory");
-                    Class[] face = clazz.getInterfaces();//获取类c实现的所有接口
+                    //获取类c实现的所有接口
+                    Class[] face = clazz.getInterfaces();
                     //判断对象是否实现接口
                     if(face!=null&&face.length>0){
                         //实现使用JDK
@@ -92,7 +94,9 @@ public class BeanFactory {
     }
 
 
-    // 任务二：对外提供获取实例对象的接口（根据id获取）
+    /**
+     * 任务二：对外提供获取实例对象的接口（根据id获取）
+     */
     public static  Object getBean(String id) {
         return map.get(id);
     }
